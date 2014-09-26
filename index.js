@@ -118,7 +118,18 @@ function jasper(options) {
 			for(var i in options.drivers) {
 				cl.loadClassSync(options.drivers[i].class).newInstanceSync();
 			}
+			cb();
+		}],
+		imports: ['loadClass', function(cb) {
+			self.dm = java.import('java.sql.DriverManager');
+			self.jreds = java.import('net.sf.jasperreports.engine.JREmptyDataSource');
+			self.jcm = java.import('net.sf.jasperreports.engine.JasperCompileManager');
+			self.hm = java.import('java.util.HashMap');
+			self.jfm = java.import('net.sf.jasperreports.engine.JasperFillManager');
+			self.jem = java.import('net.sf.jasperreports.engine.JasperExportManager');
+			cb();
 		}]
+
 	});
 
 	delete options.path;
@@ -202,12 +213,10 @@ jasper.prototype.export = function(report, type) {
 				conn.driver = self.drivers[conn.driver];
 			}
 
-			//java.callStaticMethodSync('java.lang.Class', 'forName', conn.driver.class)
-			return java.callStaticMethodSync('java.sql.DriverManager', 'getConnection', 'jdbc:'+conn.driver.type+'://'+conn.host+':'+conn.port+'/'+conn.dbname, conn.user, conn.pass)
+			return self.dm.getConnectionSync('jdbc:'+conn.driver.type+'://'+conn.host+':'+conn.port+'/'+conn.dbname, conn.user, conn.pass)
 
 		} else {
-			self.cl.loadClassSync('net.sf.jasperreports.engine.JREmptyDataSource').newInstanceSync();
-			return java.newInstanceSync('net.sf.jasperreports.engine.JREmptyDataSource');
+			return new self.jreds();
 		}
 		
 	};
@@ -218,7 +227,7 @@ jasper.prototype.export = function(report, type) {
 		if(!item.jasper && item.jrxml) {
 			var name = path.basename(item.jrxml, '.jrxml');
 			var file = '/tmp/'+name+'.jasper';
-			var compiler = java.newInstanceSync("net.sf.jasperreports.engine.JasperCompileManager");
+			var compiler = new self.jcm();
 			compiler.compileReportToFileSync(path.resolve(self.parentPath,item.jrxml), file);
 			item.jasper = file;
 		}
@@ -226,14 +235,14 @@ jasper.prototype.export = function(report, type) {
 		if(item.jasper) {
 			var data = null;
 			if(item.data) {
-				data = java.newInstanceSync("java.util.HashMap");
+				data = new self.hm();
 				for(var j in item.data) {
 					data.putSync(j, item.data[j])
 				}
 			}
 
 			var conn = processConn(item.conn);
-			var p = java.callStaticMethodSync("net.sf.jasperreports.engine.JasperFillManager", "fillReport", path.resolve(self.parentPath,item.jasper), data, conn);
+			var p = self.jfm.fillReportSync(path.resolve(self.parentPath,item.jasper), data, conn);
 			prints.push(p);
 		}
 	});
@@ -246,7 +255,7 @@ jasper.prototype.export = function(report, type) {
 			}
 		});
 		var tempName = temp.path({suffix: '.pdf'});
-		java.callStaticMethodSync("net.sf.jasperreports.engine.JasperExportManager", 'exportReportTo'+type+'File', master, tempName);
+		self.jem['exportReportTo'+type+'FileSync'](master, tempName);
 		var exp = fs.readFileSync(tempName);
 		fs.unlinkSync(tempName);
 		return exp;		
