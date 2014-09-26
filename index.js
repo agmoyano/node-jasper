@@ -66,8 +66,8 @@ function walk(dir, done) {
  */
 function jasper(options) {
 	var self = this;
-	var parentPath = path.dirname(module.parent.filename);
-	var jrPath = path.resolve(parentPath, options.path||'.');
+	self.parentPath = path.dirname(module.parent.filename);
+	var jrPath = path.resolve(self.parentPath, options.path||'.');
 	async.auto({
 		jrJars: function(cb) {
 			if(fs.statSync(path.join(jrPath, 'lib')).isDirectory() && fs.statSync(path.join(jrPath, 'dist')).isDirectory()) {
@@ -100,7 +100,7 @@ function jasper(options) {
 			var results = [];
 			if(options.drivers) {
 				for(var i in options.drivers) {
-					results.push(path.resolve(parentPath, options.drivers[i].path));
+					results.push(path.resolve(self.parentPath, options.drivers[i].path));
 				}
 			}
 			cb(null, results);
@@ -219,7 +219,7 @@ jasper.prototype.export = function(report, type) {
 			var name = path.basename(item.jrxml, '.jrxml');
 			var file = '/tmp/'+name+'.jasper';
 			var compiler = java.newInstanceSync("net.sf.jasperreports.engine.JasperCompileManager");
-			compiler.compileReportToFileSync(item.jrxml, file);
+			compiler.compileReportToFileSync(path.resolve(self.parentPath,item.jrxml), file);
 			item.jasper = file;
 		}
 
@@ -233,7 +233,7 @@ jasper.prototype.export = function(report, type) {
 			}
 
 			var conn = processConn(item.conn);
-			var p = java.callStaticMethodSync("net.sf.jasperreports.engine.JasperFillManager", "fillReport", item.jasper, data, conn);
+			var p = java.callStaticMethodSync("net.sf.jasperreports.engine.JasperFillManager", "fillReport", path.resolve(self.parentPath,item.jasper), data, conn);
 			prints.push(p);
 		}
 	});
