@@ -45,6 +45,7 @@ options: {
  			dbname: , //Database Name
  			user: , //User Name
  			pass: , //User Password
+ 			jdbc: , //jdbc connection String. If this is defined, every thing else but user and pass becomes optional. 
  			driver: //name or definition of the driver for this conn			
  		}
  	},

@@ -58,6 +58,7 @@ function walk(dir, done) {
  * 			dbname: , //Database Name
  * 			user: , //User Name
  * 			pass: , //User Password
+ * 			jdbc: , //jdbc connection string
  *			driver: //name or definition of the driver for this conn			
  * 		}
  *	},
@@ -212,8 +213,8 @@ jasper.prototype.export = function(report, type) {
 			if(typeof conn.driver == 'string') {
 				conn.driver = self.drivers[conn.driver];
 			}
-
-			return self.dm.getConnectionSync('jdbc:'+conn.driver.type+'://'+conn.host+':'+conn.port+'/'+conn.dbname, conn.user, conn.pass)
+			var connStr = conn.jdbc?conn.jdbc:'jdbc:'+conn.driver.type+'://'+conn.host+':'+conn.port+'/'+conn.dbname;
+			return self.dm.getConnectionSync(connStr, conn.user, conn.pass);
 
 		} else {
 			return new self.jreds();
