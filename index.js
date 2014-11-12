@@ -101,7 +101,9 @@ function jasper(options) {
 			var results = [];
 			if(options.drivers) {
 				for(var i in options.drivers) {
-					results.push(path.resolve(self.parentPath, options.drivers[i].path));
+					if (options.drivers[i].path) {
+						results.push(path.resolve(self.parentPath, options.drivers[i].path));
+					}
 				}
 			}
 			cb(null, results);
@@ -117,7 +119,9 @@ function jasper(options) {
 		loadClass: ['loadJars', function(cb) {
 			var cl = java.callStaticMethodSync("java.lang.ClassLoader","getSystemClassLoader")
 			for(var i in options.drivers) {
-				cl.loadClassSync(options.drivers[i].class).newInstanceSync();
+				if (options.drivers[i].class) {
+					cl.loadClassSync(options.drivers[i].class).newInstanceSync();
+				}
 			}
 			cb();
 		}],
@@ -128,6 +132,7 @@ function jasper(options) {
 			self.hm = java.import('java.util.HashMap');
 			self.jfm = java.import('net.sf.jasperreports.engine.JasperFillManager');
 			self.jem = java.import('net.sf.jasperreports.engine.JasperExportManager');
+			self.mongodb = java.import('com.jaspersoft.mongodb.connection.MongoDbConnection');
 			cb();
 		}]
 
@@ -213,8 +218,14 @@ jasper.prototype.export = function(report, type) {
 			if(typeof conn.driver == 'string') {
 				conn.driver = self.drivers[conn.driver];
 			}
-			var connStr = conn.jdbc?conn.jdbc:'jdbc:'+conn.driver.type+'://'+conn.host+':'+conn.port+'/'+conn.dbname;
-			return self.dm.getConnectionSync(connStr, conn.user, conn.pass);
+			if (conn.driver.type == 'mongodb') {
+				var mongoURI = "mongodb://"+conn.host+':'+conn.port+'/'+conn.dbname;
+				return new self.mongodb(mongoURI, null, null);
+			}
+			else {
+				var connStr = conn.jdbc?conn.jdbc:'jdbc:'+conn.driver.type+'://'+conn.host+':'+conn.port+'/'+conn.dbname;
+				return self.dm.getConnectionSync(connStr, conn.user, conn.pass);
+			}
 
 		} else {
 			return new self.jreds();
@@ -227,9 +238,8 @@ jasper.prototype.export = function(report, type) {
 	reports.forEach(function(item) {
 		if(!item.jasper && item.jrxml) {
 			var name = path.basename(item.jrxml, '.jrxml');
-			var file = '/tmp/'+name+'.jasper';
-			var compiler = new self.jcm();
-			compiler.compileReportToFileSync(path.resolve(self.parentPath,item.jrxml), file);
+			var file = temp.path({suffix: '.jasper'});
+			self.jcm.compileReportToFileSync(path.resolve(self.parentPath,item.jrxml), file);
 			item.jasper = file;
 		}
 
