@@ -26,7 +26,8 @@ options: {
  		"name": { 
  			jasper: , //Path to jasper file,
  			jrxml: , //Path to jrxml file,
- 			conn: , //Connection name, definition object or false (if false defaultConn won't apply)
+ 			conn: , //Connection name, definition object or false (if false defaultConn won't apply or if ´in_memory_json´ then you can pass an JSON object in the ´dataset´ property for in-memory data sourcing instead of database access
+ 			
  		}
  	},
  	drivers: {
@@ -82,6 +83,7 @@ options: {
       report: , //name, definition or an array with any combination of both
       data: {}, //Data to be applied to the report. If there is an array of reports, data will be applied to each.
       override: {} //properties of report to override for this specific method call.
+      dataset: an object to be JSON serialized and passed to the Report as fields instead of parameters (see the example for more info)
  	}
  	```
   * An array with any combination of the three posibilities described before. 

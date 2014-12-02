@@ -124,18 +124,30 @@ function jasper(options) {
 		imports: ['loadClass', function(cb) {
 			self.dm = java.import('java.sql.DriverManager');
 			self.jreds = java.import('net.sf.jasperreports.engine.JREmptyDataSource');
+			self.jrjsonef = java.import('net.sf.jasperreports.engine.data.JsonDataSource');
+			self.jbais = java.import('java.io.ByteArrayInputStream');
 			self.jcm = java.import('net.sf.jasperreports.engine.JasperCompileManager');
 			self.hm = java.import('java.util.HashMap');
 			self.jfm = java.import('net.sf.jasperreports.engine.JasperFillManager');
 			self.jem = java.import('net.sf.jasperreports.engine.JasperExportManager');
+			
 			cb();
 		}]
 
+	}, function() {
+	    if(self.ready) {
+	        self.ready();
+	    }
 	});
 
 	delete options.path;
 	extend(self, defaults, options);
 }
+
+jasper.prototype.ready = function(f) {
+    var self = this;
+    self.ready = f;
+};
 
 /*
  * name = Report Name
@@ -192,6 +204,7 @@ jasper.prototype.export = function(report, type) {
 						extend(i, report.override);
 					}
 					i.data = report.data;
+					i.dataset = report.dataset;
 					return i;
 				})
 			} else {
@@ -200,8 +213,16 @@ jasper.prototype.export = function(report, type) {
 		}
 	};
 
-	var processConn = function(conn) {
-		if(typeof conn == 'string') {
+	var processConn = function(conn, item) {
+		if(conn == 'in_memory_json') {
+		    var jsonString = JSON.stringify(item.dataset);
+			
+			var byteArray = java.newArray('byte', jsonString.split('').map(function(c, i) {
+			    return java.newByte(jsonString.charCodeAt(i));
+			}));
+
+			return new self.jrjsonef(new self.jbais(byteArray));    
+		}else if(typeof conn == 'string') {
 			conn = self.conns[conn];
 		} else if (typeof conn == 'function') {
 			conn = conn();
@@ -217,7 +238,9 @@ jasper.prototype.export = function(report, type) {
 			return self.dm.getConnectionSync(connStr, conn.user, conn.pass);
 
 		} else {
+		
 			return new self.jreds();
+
 		}
 		
 	};
@@ -242,7 +265,7 @@ jasper.prototype.export = function(report, type) {
 				}
 			}
 
-			var conn = processConn(item.conn);
+			var conn = processConn(item.conn, item);
 			var p = self.jfm.fillReportSync(path.resolve(self.parentPath,item.jasper), data, conn);
 			prints.push(p);
 		}
