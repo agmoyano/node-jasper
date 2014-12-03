@@ -2,7 +2,7 @@
 var fs = require('fs');
 
 
-var jasper = require(__dirname + '/../node-jasper')({
+var jasper = require('../../node-jasper')({
     path: __dirname + '/lib/jasperreports-5.6.1/',
     reports: {
         "stock_ofertas": {
