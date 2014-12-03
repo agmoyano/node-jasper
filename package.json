@@ -15,7 +15,12 @@
     "JasperReports",
     "pdf"
   ],
-  "author": "Gonzalo Gaspar Viñas",
+  "author": "Agustin Moyano",
+  "contributors": [{
+    "name": "Gonzalo Gaspar Viñas",
+    "email": "gonzalo.vinas@gmail.com",
+    "url": ""
+  }],
   "license": "GPL",
   "bugs": {
     "url": "https://github.com/gonzalovinas/node-jasper/issues"
