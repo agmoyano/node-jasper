@@ -1,6 +1,4 @@
 
-console.log('cargando jasper!');
-
 var fs = require('fs');
 
 
@@ -8,8 +6,8 @@ var jasper = require(__dirname + '/../node-jasper')({
     path: __dirname + '/lib/jasperreports-5.6.1/',
     reports: {
         "stock_ofertas": {
-            jasper: __dirname + '/reports/test.jasper',
-            jrxml: __dirname + '/reports/test.jrxml',
+            jasper: __dirname + '/sample.jasper',
+            jrxml: __dirname + '/sample.jrxml',
             conn: 'in_memory_json'
         }
     }
@@ -17,7 +15,6 @@ var jasper = require(__dirname + '/../node-jasper')({
 
 jasper.ready(function () {
     
-    console.log('ahora puedo usarlo!');
         
     var r = jasper.export({
         report: 'stock_ofertas',
@@ -25,7 +22,7 @@ jasper.ready(function () {
         dataset: { sample_field: 'I am a field from a dataset' }
     }, 'pdf');
         
-    fs.writeFile(__dirname + '/test.pdf', r);
+    fs.writeFile(__dirname + '/sample.pdf', r);
 });
 
     
