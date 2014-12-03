@@ -15,7 +15,9 @@
     "JasperReports",
     "pdf"
   ],
-  "author": "Agustin Moyano",
+  "author": {
+    "name": "Agustin Moyano"
+  },
   "contributors": [{
     "name": "Gonzalo Gaspar Viñas",
     "email": "gonzalo.vinas@gmail.com",
