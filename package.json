@@ -1,6 +1,6 @@
 {
   "name": "node-jasper",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "JasperReports within Node.js",
   "main": "index.js",
   "scripts": {
@@ -18,11 +18,13 @@
   "author": {
     "name": "Agustin Moyano"
   },
-  "contributors": [{
-    "name": "Gonzalo Gaspar Viñas",
-    "email": "gonzalo.vinas@gmail.com",
-    "url": ""
-  }],
+  "contributors": [
+    {
+      "name": "Gonzalo Gaspar Viñas",
+      "email": "gonzalo.vinas@gmail.com",
+      "url": ""
+    }
+  ],
   "license": "GPL",
   "bugs": {
     "url": "https://github.com/agmoyano/node-jasper/issues"
