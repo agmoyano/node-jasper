@@ -18,8 +18,14 @@ jasper.ready(function () {
         
     var r = jasper.export({
         report: 'stock_ofertas',
-        data: { sample_parameter: 'I am a parameter of the report' },
-        dataset: { sample_field: 'I am a field from a dataset' }
+        data: { language: 'spanish' },
+        dataset: [{ 
+		name: 'Gonzalo',
+		lastname: 'Vinas' // TODO: check on UTF-8 
+	}, {
+		name: 'Agustin',
+		lastname: 'Moyano'
+        }]
     }, 'pdf');
         
     fs.writeFile(__dirname + '/sample.pdf', r);
