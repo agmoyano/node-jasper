@@ -251,8 +251,11 @@ jasper.prototype.export = function(report, type) {
 		if(!item.jasper && item.jrxml) {
 			var name = path.basename(item.jrxml, '.jrxml');
 			var file = '/tmp/'+name+'.jasper';
-			var compiler = new self.jcm();
-			compiler.compileReportToFileSync(path.resolve(self.parentPath,item.jrxml), file);
+			var compiler = java.callStaticMethodSync(
+			    "net.sf.jasperreports.engine.JasperCompileManager",
+			    "compileReportToFile", 
+			    path.resolve(self.parentPath,item.jrxml), file
+			    );
 			item.jasper = file;
 		}
 

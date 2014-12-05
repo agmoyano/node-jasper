@@ -1,6 +1,6 @@
 {
   "name": "node-jasper",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "JasperReports within Node.js",
   "main": "index.js",
   "scripts": {
