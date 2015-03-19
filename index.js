@@ -62,10 +62,21 @@ function walk(dir, done) {
  *			driver: //name or definition of the driver for this conn			
  * 		}
  *	},
- *	defaultConn: //Default Connection name	
+ *	defaultConn: , //Default Connection name
+	java: //Array of java options, for example ["-Djava.awt.headless=true"]
  * }
  */
 function jasper(options) {
+	if(options.java) {
+		if(util.isArray(options.java)) {
+			options.java.forEach(function(javaOption) {
+				java.options.push(javaOption);	
+			});
+		}
+		if(typeof options.java == 'string') {
+			java.options.push(options.java);
+		}
+	}
 	var self = this;
 	self.parentPath = path.dirname(module.parent.filename);
 	var jrPath = path.resolve(self.parentPath, options.path||'.');

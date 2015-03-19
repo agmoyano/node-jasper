@@ -50,7 +50,8 @@ options: {
  			driver: //name or definition of the driver for this conn			
  		}
  	},
- 	defaultConn: //Default Connection name	
+ 	defaultConn: ,//Default Connection name	
+	java: //Array of java options, for example ["-Djava.awt.headless=true"]
  }
  ```
 
