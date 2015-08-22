@@ -51,7 +51,8 @@ options: {
  		}
  	},
  	defaultConn: ,//Default Connection name	
-	java: //Array of java options, for example ["-Djava.awt.headless=true"]
+	java: ,//Array of java options, for example ["-Djava.awt.headless=true"]
+	javaInstnace: //Instance of node-java, if this is null, a new instance will be created and passed in 'java' property
  }
  ```
 

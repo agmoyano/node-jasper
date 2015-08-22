@@ -1,4 +1,4 @@
-var java = require('java'),
+var java=null,
 	fs = require('fs'),
 	path = require('path'),
 	extend = require('extend'),
@@ -30,13 +30,13 @@ function walk(dir, done) {
     });
   });
 };
-	
+
 /*
  * options: {
  * 	path: , //Path to jasperreports-x.x.x-project directory
  * 	reports: {
  * 		// Report Definition
- * 		"name": { 
+ * 		"name": {
  * 			jasper: , //Path to jasper file,
  * 			jrxml: , //Path to jrxml file,
  * 			conn: , //Connection name, definition object or false (if false defaultConn won't apply)
@@ -59,7 +59,7 @@ function walk(dir, done) {
  * 			user: , //User Name
  * 			pass: , //User Password
  * 			jdbc: , //jdbc connection string
- *			driver: //name or definition of the driver for this conn			
+ *			driver: //name or definition of the driver for this conn
  * 		}
  *	},
  *	defaultConn: , //Default Connection name
@@ -67,10 +67,16 @@ function walk(dir, done) {
  * }
  */
 function jasper(options) {
+	if(options.javaInstance) {
+		java = options.javaInstance
+	} else {
+		java = require('java')
+	}
+	this.java = java;
 	if(options.java) {
 		if(util.isArray(options.java)) {
 			options.java.forEach(function(javaOption) {
-				java.options.push(javaOption);	
+				java.options.push(javaOption);
 			});
 		}
 		if(typeof options.java == 'string') {
@@ -141,7 +147,7 @@ function jasper(options) {
 			self.hm = java.import('java.util.HashMap');
 			self.jfm = java.import('net.sf.jasperreports.engine.JasperFillManager');
 			self.jem = java.import('net.sf.jasperreports.engine.JasperExportManager');
-			
+
 			cb();
 		}]
 
@@ -177,18 +183,18 @@ jasper.prototype.pdf = function(report) {
  * _ A string that represents report's name. No data is supplied.. defaultConn will be applied to get data with reports internal query.
  * _ An object that represents report's definition. No data is supplied.. defaultConn will be applied to get data with reports internal query.
  * _ An object that represents reports, data and properties to override for this specific method call.
- *	
+ *
  * 	{
  * 		report: , //name, definition or an array with any combination of both
  * 		data: {}, //Data to be applied to the report. If there is an array of reports, data will be applied to each.
  * 		override: {} //properties of report to override for this specific method call.
- * 	} 
- * _ An array with any combination of the three posibilities described before. 
+ * 	}
+ * _ An array with any combination of the three posibilities described before.
  * _ A function returning any combination of the four posibilities described before.
  */
 
 jasper.prototype.export = function(report, type) {
-	
+
 	var self = this;
 
 	if(!type) return;
@@ -227,12 +233,12 @@ jasper.prototype.export = function(report, type) {
 	var processConn = function(conn, item) {
 		if(conn == 'in_memory_json') {
 		    var jsonString = JSON.stringify(item.dataset);
-			
+
 			var byteArray = java.newArray('byte', jsonString.split('').map(function(c, i) {
 			    return java.newByte(jsonString.charCodeAt(i));
 			}));
 
-			return new self.jrjsonef(new self.jbais(byteArray));    
+			return new self.jrjsonef(new self.jbais(byteArray));
 		}else if(typeof conn == 'string') {
 			conn = self.conns[conn];
 		} else if (typeof conn == 'function') {
@@ -249,11 +255,11 @@ jasper.prototype.export = function(report, type) {
 			return self.dm.getConnectionSync(connStr, conn.user, conn.pass);
 
 		} else {
-		
+
 			return new self.jreds();
 
 		}
-		
+
 	};
 
 	var reports = processReport(report);
@@ -264,7 +270,7 @@ jasper.prototype.export = function(report, type) {
 			var file = '/tmp/'+name+'.jasper';
 			var compiler = java.callStaticMethodSync(
 			    "net.sf.jasperreports.engine.JasperCompileManager",
-			    "compileReportToFile", 
+			    "compileReportToFile",
 			    path.resolve(self.parentPath,item.jrxml), file
 			    );
 			item.jasper = file;
@@ -296,7 +302,7 @@ jasper.prototype.export = function(report, type) {
 		self.jem['exportReportTo'+type+'FileSync'](master, tempName);
 		var exp = fs.readFileSync(tempName);
 		fs.unlinkSync(tempName);
-		return exp;		
+		return exp;
 	}
 	return '';
 }
