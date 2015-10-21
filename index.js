@@ -207,7 +207,7 @@ jasper.prototype.export = function(report, type) {
 		} else if(util.isArray(report)) {
 			var ret = [];
 			report.forEach(function(i) {
-				ret.concat(processReport(i));
+				ret = ret.concat(processReport(i));
 			});
 			return ret;
 		} else if(typeof report == 'function') {
