@@ -216,18 +216,17 @@ jasper.prototype.export = function(report, type) {
 
 	var processReport = function(report) {
 		if(typeof report == 'string') {
-			return [self.reports[report]];
+			return [extend({},self.reports[report])];
 		} else if(util.isArray(report)) {
 			var ret = [];
 			report.forEach(function(i) {
-				ret.concat(processReport(i));
+				ret = ret.concat(processReport(i));
 			});
 			return ret;
 		} else if(typeof report == 'function') {
 			return processReport(report());
 		} else if(typeof report == 'object') {
 			if(report.data||report.override) {
-				var ret = [];
 				var reps = processReport(report.report);
 				return reps.map(function(i) {
 					if(report.override) {
