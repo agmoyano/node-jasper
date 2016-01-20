@@ -6,7 +6,7 @@ var java=null,
 	temp = require('temp'),
 	async = require('async');
 
-var defaults = {reports:{}, drivers:{}, conns:{}};
+var defaults = {reports:{}, drivers:{}, conns:{}, tmpPath: '/tmp'};
 
 function walk(dir, done) {
   var results = [];
@@ -34,6 +34,7 @@ function walk(dir, done) {
 /*
  * options: {
  * 	path: , //Path to jasperreports-x.x.x-project directory
+ *  tmpPath: '/tmp', // Path to a folder for storing compiled report files
  * 	reports: {
  * 		// Report Definition
  * 		"name": {
@@ -278,7 +279,7 @@ jasper.prototype.export = function(report, type) {
 	var prints = [];
 	reports.forEach(function(item) {
 		if(!item.jasper && item.jrxml) {
-			item.jasper = self.compileSync(item.jrxml, '/tmp');
+			item.jasper = self.compileSync(item.jrxml, self.tmpPath);
 		}
 
 		if(item.jasper) {
@@ -315,8 +316,7 @@ jasper.prototype.export = function(report, type) {
 /*
  * compiles all reports added to the reports definition collection with a jrxml file specified
  *
- * dstFolder can be:
- * _ A string that represents the destination folder where the compiled report files will be placed
+ * dstFolder = destination folder path where the compiled report files will be placed. If not specified, will use the options tmpPath or the defaults tmpPath value.
  *
  */
 jasper.prototype.compileAllSync = function (dstFolder) {
@@ -324,7 +324,7 @@ jasper.prototype.compileAllSync = function (dstFolder) {
     for (var name in self.reports) {
         var report = self.reports[name];
         if (report.jrxml) {
-            report.jasper = self.compileSync(report.jrxml, dstFolder);
+            report.jasper = self.compileSync(report.jrxml, dstFolder || self.tmpPath);
         }
 	}
 }
@@ -332,8 +332,7 @@ jasper.prototype.compileAllSync = function (dstFolder) {
 /*
  * compiles a jrxml report file to a jasper file with the same name
  *
- * dstFolder can be:
- * _ A string that represents the destination folder where the compiled report files will be placed
+ * dstFolder = destination folder path where the compiled report files will be placed. If not specified, will use the options tmpPath or the defaults tmpPath value.
  *
  * returns the full path of the created jasper file
  *
@@ -341,7 +340,7 @@ jasper.prototype.compileAllSync = function (dstFolder) {
 jasper.prototype.compileSync = function (jrxmlFile, dstFolder) {
 	var self = this;
     var name = path.basename(jrxmlFile, '.jrxml');
-    var file = path.join(dstFolder, name + '.jasper');
+    var file = path.join(dstFolder || self.tmpPath, name + '.jasper');
     java.callStaticMethodSync(
         "net.sf.jasperreports.engine.JasperCompileManager",
         "compileReportToFile",
