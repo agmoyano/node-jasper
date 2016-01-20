@@ -278,14 +278,7 @@ jasper.prototype.export = function(report, type) {
 	var prints = [];
 	reports.forEach(function(item) {
 		if(!item.jasper && item.jrxml) {
-			var name = path.basename(item.jrxml, '.jrxml');
-			var file = '/tmp/'+name+'.jasper';
-			var compiler = java.callStaticMethodSync(
-			    "net.sf.jasperreports.engine.JasperCompileManager",
-			    "compileReportToFile",
-			    path.resolve(self.parentPath,item.jrxml), file
-			    );
-			item.jasper = file;
+			item.jasper = self.compileSync(item.jrxml, '/tmp');
 		}
 
 		if(item.jasper) {
@@ -318,6 +311,44 @@ jasper.prototype.export = function(report, type) {
 	}
 	return '';
 }
+
+/*
+ * compiles all reports added to the reports definition collection with a jrxml file specified
+ *
+ * dstFolder can be:
+ * _ A string that represents the destination folder where the compiled report files will be placed
+ *
+ */
+jasper.prototype.compileAllSync = function (dstFolder) {
+	var self = this;
+    for (var name in self.reports) {
+        var report = self.reports[name];
+        if (report.jrxml) {
+            report.jasper = self.compileSync(report.jrxml, dstFolder);
+        }
+	}
+}
+
+/*
+ * compiles a jrxml report file to a jasper file with the same name
+ *
+ * dstFolder can be:
+ * _ A string that represents the destination folder where the compiled report files will be placed
+ *
+ * returns the full path of the created jasper file
+ *
+ */
+jasper.prototype.compileSync = function (jrxmlFile, dstFolder) {
+	var self = this;
+    var name = path.basename(jrxmlFile, '.jrxml');
+    var file = path.join(dstFolder, name + '.jasper');
+    java.callStaticMethodSync(
+        "net.sf.jasperreports.engine.JasperCompileManager",
+        "compileReportToFile",
+        path.resolve(self.parentPath, jrxmlFile), file
+    );
+    return file;
+};
 
 module.exports = function(options) {
 	return new jasper(options)
