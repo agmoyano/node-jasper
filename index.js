@@ -15,7 +15,7 @@ function walk(dir, done) {
     var pending = list.length;
     if (!pending) return done(null, results);
     list.forEach(function(file) {
-      file = dir + '/' + file;
+      file = path.join(dir, file);
       fs.stat(file, function(err, stat) {
         if (stat && stat.isDirectory()) {
           walk(file, function(err, res) {
