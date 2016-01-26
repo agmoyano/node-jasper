@@ -161,6 +161,7 @@ function jasper(options) {
 			self.hm = java.import('java.util.HashMap');
 			self.jfm = java.import('net.sf.jasperreports.engine.JasperFillManager');
 			self.jem = java.import('net.sf.jasperreports.engine.JasperExportManager');
+			self.loc = java.import('java.util.Locale');
 
 			cb();
 		}]
@@ -275,6 +276,17 @@ jasper.prototype.export = function(report, type) {
 
 	};
 
+	var parseLocale = function (localeString) {
+		var tokens = localeString.split(/[_|-]/);
+
+		if (tokens.length > 1) {
+			return self.loc(tokens[0], tokens[1]);
+		}
+		else {
+			return self.loc(tokens[0]);
+		}
+	}
+
 	var reports = processReport(report);
 	var prints = [];
 	reports.forEach(function(item) {
@@ -287,6 +299,9 @@ jasper.prototype.export = function(report, type) {
 			if(item.data) {
 				data = new self.hm();
 				for(var j in item.data) {
+					if (j === 'REPORT_LOCALE') {
+						item.data[j] = parseLocale(item.data[j]);
+					}
 					data.putSync(j, item.data[j])
 				}
 			}
