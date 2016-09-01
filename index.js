@@ -208,6 +208,7 @@ jasper.prototype.pdf = function(report) {
  * _ A function returning any combination of the four posibilities described before.
  */
 
+var validConnections = {};
 jasper.prototype.export = function(report, type) {
 
 	var self = this;
@@ -266,8 +267,11 @@ jasper.prototype.export = function(report, type) {
 				conn.driver = self.drivers[conn.driver];
 			}
 			var connStr = conn.jdbc?conn.jdbc:'jdbc:'+conn.driver.type+'://'+conn.host+':'+conn.port+'/'+conn.dbname;
-			return self.dm.getConnectionSync(connStr, conn.user, conn.pass);
-
+			
+			if(!validConnections[connStr] || !validConnections[connStr].isValidSync(conn.validationTimeout || 1)){
+				validConnections[connStr] = self.dm.getConnectionSync(connStr, conn.user, conn.pass);
+			}
+			return validConnections[connStr];
 		} else {
 
 			return new self.jreds();
