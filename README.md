@@ -90,6 +90,7 @@ options: {
       data: {}, //Data to be applied to the report. If there is an array of reports, data will be applied to each.
       override: {} //properties of report to override for this specific method call.
       dataset: {} //an object to be JSON serialized and passed to the Report as fields instead of parameters (see the example for more info)
+	  query: '' // string to pass to jasperreports to query on the dataset
  	}
  	```
   * An array with any combination of the three posibilities described before.

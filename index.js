@@ -237,6 +237,7 @@ jasper.prototype.export = function(report, type) {
 					}
 					i.data = report.data;
 					i.dataset = report.dataset;
+					i.query = report.query;
 					return i;
 				})
 			} else {
@@ -253,7 +254,7 @@ jasper.prototype.export = function(report, type) {
 			    return java.newByte(jsonString.charCodeAt(i));
 			}));
 
-			return new self.jrjsonef(new self.jbais(byteArray));
+			return new self.jrjsonef(new self.jbais(byteArray), item.query || '');
 		}else if(typeof conn == 'string') {
 			conn = self.conns[conn];
 		} else if (typeof conn == 'function') {
@@ -267,7 +268,7 @@ jasper.prototype.export = function(report, type) {
 				conn.driver = self.drivers[conn.driver];
 			}
 			var connStr = conn.jdbc?conn.jdbc:'jdbc:'+conn.driver.type+'://'+conn.host+':'+conn.port+'/'+conn.dbname;
-			
+
 			if(!validConnections[connStr] || !validConnections[connStr].isValidSync(conn.validationTimeout || 1)){
 				validConnections[connStr] = self.dm.getConnectionSync(connStr, conn.user, conn.pass);
 			}
