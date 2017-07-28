@@ -131,7 +131,16 @@ var express = require('express'),
 
 	app.get('/pdf', function(req, res, next) {
 		//beware of the datatype of your parameter.
-		var report = {report: 'hw', data: {id: parseInt(req.query.id, 10)}};
+		var report = {
+			report: 'hw',
+			data: {
+				id: parseInt(req.query.id, 10)
+				secundaryDataset: jasper.toJsonDataSource({
+					data: ...
+				},'data')
+			}
+			dataset: //main dataset
+		};
 		var pdf = jasper.pdf(report);
 		res.set({
 			'Content-type': 'application/pdf',
