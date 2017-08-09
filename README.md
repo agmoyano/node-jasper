@@ -90,6 +90,7 @@ options: {
       data: {}, //Data to be applied to the report. If there is an array of reports, data will be applied to each.
       override: {} //properties of report to override for this specific method call.
       dataset: {} //an object to be JSON serialized and passed to the Report as fields instead of parameters (see the example for more info)
+	  query: '' // string to pass to jasperreports to query on the dataset
  	}
  	```
   * An array with any combination of the three posibilities described before.
@@ -130,7 +131,16 @@ var express = require('express'),
 
 	app.get('/pdf', function(req, res, next) {
 		//beware of the datatype of your parameter.
-		var report = {report: 'hw', data: {id: parseInt(req.query.id, 10)}};
+		var report = {
+			report: 'hw',
+			data: {
+				id: parseInt(req.query.id, 10)
+				secundaryDataset: jasper.toJsonDataSource({
+					data: ...
+				},'data')
+			}
+			dataset: //main dataset
+		};
 		var pdf = jasper.pdf(report);
 		res.set({
 			'Content-type': 'application/pdf',
