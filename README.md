@@ -112,7 +112,7 @@ var express = require('express'),
 		drivers: {
 			pg: {
 				path: 'lib/postgresql-9.2-1004.jdbc41.jar',
-				class: 'org.posgresql.Driver',
+				class: 'org.postgresql.Driver',
 				type: 'postgresql'
 			}
 		},
