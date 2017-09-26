@@ -1,35 +1,39 @@
 {
-    "name": "node-jasper",
-    "version": "0.2.2",
-    "description": "JasperReports within Node.js",
-    "main": "index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/agmoyano/node-jasper.git"
-    },
-    "keywords": ["jasper", "JasperReports", "pdf"],
-    "author": {
-        "name": "Agustin Moyano"
-    },
-    "contributors": [
-        {
-            "name": "Gonzalo Gaspar Viñas",
-            "email": "gonzalo.vinas@gmail.com",
-            "url": ""
-        }
-    ],
-    "license": "GPL",
-    "bugs": {
-        "url": "https://github.com/agmoyano/node-jasper/issues"
-    },
-    "homepage": "https://github.com/agmoyano/node-jasper",
-    "dependencies": {
-        "async": "^0.9.0",
-        "extend": "^1.3.0",
-        "java": "^0.8.0",
-        "temp": "^0.8.1"
+  "name": "node-jasper",
+  "version": "0.2.2",
+  "description": "JasperReports within Node.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agmoyano/node-jasper.git"
+  },
+  "keywords": [
+    "jasper",
+    "JasperReports",
+    "pdf"
+  ],
+  "author": {
+    "name": "Agustin Moyano"
+  },
+  "contributors": [
+    {
+      "name": "Gonzalo Gaspar Viñas",
+      "email": "gonzalo.vinas@gmail.com",
+      "url": ""
     }
+  ],
+  "license": "GPL",
+  "bugs": {
+    "url": "https://github.com/agmoyano/node-jasper/issues"
+  },
+  "homepage": "https://github.com/agmoyano/node-jasper",
+  "dependencies": {
+    "async": "^0.9.0",
+    "extend": "^1.3.0",
+    "java": "^0.8.0",
+    "temp": "^0.8.1"
+  }
 }
