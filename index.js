@@ -248,11 +248,14 @@ jasper.prototype.export = function(report, type) {
 
 	var processConn = function(conn, item) {
 		if(conn == 'in_memory_json') {
-		    var jsonString = JSON.stringify(item.dataset);
+			var jsonString = JSON.stringify(item.dataset);
 
-			var byteArray = java.newArray('byte', jsonString.split('').map(function(c, i) {
-			    return java.newByte(jsonString.charCodeAt(i));
-			}));
+			var byteArray = [];
+			var buffer = Buffer(jsonString);
+			for (var i = 0; i < buffer.length; i++) {
+				byteArray.push(buffer[i]);
+			}
+			byteArray = java.newArray('byte', byteArray);
 
 			return new self.jrjsonef(new self.jbais(byteArray), item.query || '');
 		}else if(typeof conn == 'string') {
