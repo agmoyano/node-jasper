@@ -208,6 +208,7 @@ jasper.prototype.pdf = function(report) {
  * _ A function returning any combination of the four posibilities described before.
  */
 
+var validConnections = {};
 jasper.prototype.export = function(report, type) {
 
 	var self = this;
@@ -236,6 +237,7 @@ jasper.prototype.export = function(report, type) {
 					}
 					i.data = report.data;
 					i.dataset = report.dataset;
+					i.query = report.query;
 					return i;
 				})
 			} else {
@@ -246,13 +248,16 @@ jasper.prototype.export = function(report, type) {
 
 	var processConn = function(conn, item) {
 		if(conn == 'in_memory_json') {
-		    var jsonString = JSON.stringify(item.dataset);
+			var jsonString = JSON.stringify(item.dataset);
 
-			var byteArray = java.newArray('byte', jsonString.split('').map(function(c, i) {
-			    return java.newByte(jsonString.charCodeAt(i));
-			}));
+			var byteArray = [];
+			var buffer = Buffer(jsonString);
+			for (var i = 0; i < buffer.length; i++) {
+				byteArray.push(buffer[i]);
+			}
+			byteArray = java.newArray('byte', byteArray);
 
-			return new self.jrjsonef(new self.jbais(byteArray));
+			return new self.jrjsonef(new self.jbais(byteArray), item.query || '');
 		}else if(typeof conn == 'string') {
 			conn = self.conns[conn];
 		} else if (typeof conn == 'function') {
@@ -266,8 +271,11 @@ jasper.prototype.export = function(report, type) {
 				conn.driver = self.drivers[conn.driver];
 			}
 			var connStr = conn.jdbc?conn.jdbc:'jdbc:'+conn.driver.type+'://'+conn.host+':'+conn.port+'/'+conn.dbname;
-			return self.dm.getConnectionSync(connStr, conn.user, conn.pass);
 
+			if(!validConnections[connStr] || !validConnections[connStr].isValidSync(conn.validationTimeout || 1)){
+				validConnections[connStr] = self.dm.getConnectionSync(connStr, conn.user, conn.pass);
+			}
+			return validConnections[connStr];
 		} else {
 
 			return new self.jreds();
@@ -363,6 +371,15 @@ jasper.prototype.compileSync = function (jrxmlFile, dstFolder) {
     );
     return file;
 };
+
+jasper.prototype.toJsonDataSource = function (dataset,query) {
+	var self = this;
+	var jsonString = JSON.stringify(dataset);
+	var byteArray = java.newArray('byte', jsonString.split('').map(function(c, i) {
+		return java.newByte(jsonString.charCodeAt(i));
+	}));
+	return new self.jrjsonef(new self.jbais(byteArray), query || '');
+}
 
 module.exports = function(options) {
 	return new jasper(options)
