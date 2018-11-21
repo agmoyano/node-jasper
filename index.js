@@ -136,6 +136,24 @@ function jasper(options) {
 			if(!options.debug) options.debug = 'off';
 			var levels = ['ALL', 'TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL', 'OFF'];
 			if(levels.indexOf((options.debug+'').toUpperCase()) == -1) options.debug = 'DEBUG';
+
+			/*
+			commented because in java 1.8 this causes
+
+			#
+			# A fatal error has been detected by the Java Runtime Environment:
+			#
+			#  SIGSEGV (0xb) at pc=0x00007f5caeacbac2, pid=7, tid=0x00007f5caf3c8ae8
+			#
+			# JRE version: OpenJDK Runtime Environment (8.0_181-b13) (build 1.8.0_181-b13)
+			# Java VM: OpenJDK 64-Bit Server VM (25.181-b13 mixed mode linux-amd64 compressed oops)
+			# Derivative: IcedTea 3.9.0
+			# Distribution: Custom build (Tue Oct 23 12:48:04 GMT 2018)
+			# Problematic frame:
+			# C  [nodejavabridge_bindings.node+0x20ac2]  javaGetEnv(JavaVM_*, _jobject*)+0xa2
+			*/
+
+			/*
 			var appender  = java.newInstanceSync('org.apache.log4j.ConsoleAppender');
 			var pattern = java.newInstanceSync('org.apache.log4j.PatternLayout', "%d [%p|%c|%C{1}] %m%n");
 			appender.setLayout(pattern);
@@ -143,6 +161,7 @@ function jasper(options) {
 			appender.activateOptions();
 			var root = java.callStaticMethodSync("org.apache.log4j.Logger", "getRootLogger");
 			root.addAppender(appender);
+			*/
 			cb();
 		}],
 		loadClass: ['loadJars', function(cb) {
